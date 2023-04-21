@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de-de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>3D Laser Scanner</title>
+	<meta name="description" content="Personal blog">
+	<meta name="author" content="Manfred Caspar">
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	------<br>
+	  <a href="http://22x22.de/">mancas</a> <br>
+	------
+	<div style="float: right;"></div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts/"><b>Laufendes Projekt</b></a>.
+			
+			<a href="/%C3%BCber-diese-seite/about"><b>Über diese Seite</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>3D Laser Scanner</h1>
+			<b><time>2021-03-03 09:25:00</time></b>
+		       
+
+			<div>
+				<p>Der VL53Lox ist ein Modul, das einen 5x3 mm großen Chip enthält. Dieser hat zwei winzige Löcher: durch das eine wird ein Ifrarot-Laserstrahl gepulst, das andere empfängt die Reflexion. Aus der Zeitdifferenz wird der Abstand ermittelt. Messbereich 40 mm bis 4000 mm, Entfernung wird mit einer Toleranz von +/- 1mm ermittelt.<br />
+<br></p>
+<p>Es gibt dazu Projekte, die so einen Abstandssensor als Einparkhilfe für PKW gebaut haben.<br />
+<br></p>
+<h3 id="3d-scanner">3D Scanner</h3>
+<p>Ich hab mir überlegt, einen kostengünstigen 3D-Scanner daraus zu bauen. Ich werde mit einer Schwenkvorrichtung ein Objekt abtasten. Dazu 20 Punkte je Zeile und 20 Zeilen mit zwei Modellbauservos, angesteuert von einem ESP32 anfahren und dann dort den Abstand messen.<br />
+Das sollte doch funktionnieren und ein 3D-Bild des objektes liefern. Der 3D-gedruckte Aufbau, die Vorlagen aus <a href="https://www.thingiverse.com/">https://www.thingiverse.com/</a> wurden um den Halter für den VL53Lox ergänzt und etwas angepasst.</p>
+<p><img src="/images/LaserScan/PnTiltLidarVL53L0X.jpg" alt="PnTiltLidarVL53L0X.jpg" /><br />
+<br></p>
+<h3 id="visualisierung-des-scannergebnisses">Visualisierung des Scannergebnisses</h3>
+<p>Mit dem ESP bereite ich die Ausgabe über die Konsole so auf, dass ich sie mit Copy and Paste in das 3D Konstruktioneprogramm OpenScad:  <a href="http://www.openscad.org/">http://www.openscad.org/</a> einfügen kann. Bei OpenScad werden die 3D-Elemente nicht grafisch angelegt, sondern in einem Script beschrieben. Bei Interesse ist hier ein gute Beschreibung zu finden. <a href="https://knopper.net/openscad/OpenScad-Tutorial.pdf">https://knopper.net/openscad/OpenScad-Tutorial.pdf</a></p>
+<p>Die Enfernung ergibt je Messpunkt eine Säule, hier habe ich in meinem Script zu Tests eine Pyramide angelegt.</p>
+<p><img src="/images/LaserScan/VisualisierungScan2.jpg" alt="VisualisierungScan2.jpg" /><br />
+<br></p>
+<h3 id="so-läuft-der-scann">So läuft der Scann</h3>
+<p>Hier sieht man den Scanner in Aktion und das visulisierte Objekt in OpenScad.</p>
+<!-- blank line -->
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="/images/LaserScan/PanTiltLidarScan.jpg">
+    <source src="/images/LaserScan/PanTiltLidarScan.mp4" type="video/mp4">
+    </video>
+</figure>
+<!-- blank line -->
+<br>
+<h3 id="beurteilung-des-scannergebnisses">Beurteilung des Scannergebnisses</h3>
+<p>Das ist kein Objekt sondern eher ein 3D-Säulen-Chaos.</p>
+<p><img src="/images/LaserScan/PanTiltLidarVisu.jpg" alt="PanTiltLidarVisu.jpg" /><br />
+<br></p>
+<p>Darauf hin habe ich in einem Versuch einen sekrechten Stift von der Seite langsam vor den fixierten Lidar geschobenden und so bestimmt, wann der Stift in den Erfassungsbereich kommt.<br />
+Der Öffnungswinkel der Laserkeule beträgt demnach 22 Grad. Das ist geiegnet, um als Rückfahrsensor im Auto vor Hindernissen zu warnen.<br />
+Klar ist aber auch, dass so mein Objekt nicht sauber aufgelöst werden kann.<br />
+<br></p>
+<h3 id="verbesserungen-durch-softwareaufbereitung">Verbesserungen durch Softwareaufbereitung</h3>
+<p>Der Sensor gibt immer die kürzeste Entfernung in seiner Erfassungskeule als erfassten Abstand an. Wenn man also in ein Hinderniss schwenkt, so müsste die erfasste Verkürzung des Abstandes nicht dem Zentrum der Laserkeule sondern den Koordinaten des Erfassungsrandes zugewiesen werden. Bei Mehrfachscanns und flächigen Objekten könnte dies ein grobes reelles Abbild liefern. Aus mehreren derartiger Schattenrisse eines sich drehenden Objektes könnte ein 3D-Scann zusammengesetzt werden. Was richtig Gutes wird das aber nicht.</p>
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/webradio/">WebRadio</a></li>
+				
+				<li><a href="/posts/3d-druck/">3D-Druck</a></li>
+				
+				<li><a href="/posts/stencil3ddruck/">3D-Druck eines Stencil-Halters</a></li>
+				
+				<li><a href="/posts/laserscan/">3D Laser Scanner</a></li>
+				
+				<li><a href="/posts/wlanrelais/">WLanRelais</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2022 <a href="http://22x22.de/"><b>mancas</b></a>.
+	<a href="/impressum/impressum"><b>Impressum</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>

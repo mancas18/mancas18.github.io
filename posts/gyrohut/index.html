@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de-de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>Gyro Hut</title>
+	<meta name="description" content="Personal blog">
+	<meta name="author" content="Manfred Caspar">
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	------<br>
+	  <a href="http://22x22.de/">mancas</a> <br>
+	------
+	<div style="float: right;"></div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts/"><b>Laufendes Projekt</b></a>.
+			
+			<a href="/%C3%BCber-diese-seite/about"><b>Über diese Seite</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>Gyro Hut</h1>
+			<b><time>2020-10-10 23:55:00</time></b>
+		       
+
+			<div>
+				<p>Bart ist mein Avatar und wird duch meinen Hut gesteuert.</p>
+<h3 id="der-avatar-übernimmt-meine-bewegungen">Der Avatar übernimmt meine Bewegungen</h3>
+<p>Bart, mein Präsenz-Roboter würde für mich an Besprechungen teilnehmen.<br />
+<b>BART</b> bedeuted <b>B</b>lue-<b>A</b>vatar-<b>R</b>obote<b>R</b>.</p>
+<p>Neben Bild- und Tonübertragung, wie bei einer Web-Konferenz, sollte der Roboter den Kopf jeweils dem Gesprächspartner zuwenden.</p>
+<p>Der Roboter holt sich dazu Steuerungssignale von seinem Server um sich in einem entfernten Besprechungsraum zu bewegen. Eine Steuerungseinheit auf meinem Hut bereitet diese aus meinen Kopfbewegungen auf.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="definition-des-steuerungs-files">Definition des Steuerungs Files</h3>
+<p>Das File enthält die Daten, wo der Avatar hinschauen soll.</p>
+<pre tabindex="0"><code>{&#34;XGo&#34;:90, &#34;YGo&#34;:-30, &#34;Action&#34;:0}
+</code></pre><p>WerteBereich für XGo ist von -150 bis + 150, für YGo von -60 bis +60. Bart schaut also, aus seiner Sicht gesehen, in diesem Beispiel nach links unten. Er frägt den Server ständig ab und reagiert sobald er eine Veränderung am File erkennt.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="der-gyroskop-hut">Der Gyroskop Hut</h3>
+<p>&amp;</p>
+<!-- blank line -->
+<figure class="video_container">
+<video controls="true" allowfullscreen="true" poster="/images/GyroHut/GyroHut.jpg">
+<source src="/images/GyroHut/GyroHut.mp4" type="video/mp4">
+</video>
+</figure>
+<!-- blank line -->
+<p>Das kleine Modul GX521 enthält einen MPU-6050. Dieser liefert Drehbeschleunigungen, die mit der Library MPU6050_light zu Winkeln im Raum ausgewertet werden.</p>
+<p>Dies übernimmt ein ESP32. Er erstellt dann ein Json File und hostet es über seinen Webserver im Wlan.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<pre tabindex="0"><code>**************************************************************
+ * Use the MP5060_light library to get gyro datas from MPU6050
+ * (build in the GX521) and deliver these datas as Json file
+ * with a webserver to control movements of a robot
+ * mancas at lug-saar.de
+ * some code found at elektro . turanis .de
+ * ************************************************************
+ */
+
+// initialise GX521 with MPU6050
+#include &lt;Wire.h&gt;
+#include &lt;MPU6050_light.h&gt;
+
+MPU6050 mpu(Wire);
+String YPos, XPos, ZPos;
+float XPosfloat, YPosfloat;
+
+
+// variable for wait without delay
+long previousMillis = 0; // saves the time at which it was last switched on
+
+
+// initialise Webserver
+#include &lt;WiFi.h&gt;
+#include &lt;WiFiClient.h&gt;
+#include &lt;WebServer.h&gt;
+#include &lt;ESPmDNS.h&gt;
+
+// wifi datas
+const char* ssid = &#34;xxx&#34;;
+const char* password = &#34;xxxx1&#34;;
+
+WebServer server(80);
+const int led = 13;
+String JsonFile;
+
+void handleRoot() {
+  digitalWrite(led, 1);
+  server.send(200, &#34;text/plain&#34;, JsonFile);
+  digitalWrite(led, 0);
+}
+
+void handleNotFound() {
+  digitalWrite(led, 1);
+  String message = &#34;File Not Found\n\n&#34;;
+  message += &#34;URI: &#34;;
+  message += server.uri();
+  message += &#34;\nMethod: &#34;;
+  message += (server.method() == HTTP_GET) ? &#34;GET&#34; : &#34;POST&#34;;
+  message += &#34;\nArguments: &#34;;
+  message += server.args();
+  message += &#34;\n&#34;;
+  for (uint8_t i = 0; i &lt; server.args(); i++) {
+    message += &#34; &#34; + server.argName(i) + &#34;: &#34; + server.arg(i) + &#34;\n&#34;;
+  }
+  server.send(404, &#34;text/plain&#34;, message);
+  digitalWrite(led, 0);
+}
+
+
+// ***********************************************************
+void setup() {
+Serial.begin(115200);
+
+// setup MPU6050
+    Serial.flush();
+    Wire.begin();
+    mpu.begin();
+    Serial.println(F(&#34;evaluating gyro basic datas, do not move&#34;));
+    delay(1000);
+    mpu.calcGyroOffsets();
+    Serial.println(&#34;Done.&#34;);
+
+
+// setup webserver    
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.println(&#34;&#34;);
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(&#34;.&#34;);
+  }
+  Serial.println(&#34;&#34;);
+  Serial.print(&#34;Connected to &#34;);
+  Serial.println(ssid);
+  Serial.print(&#34;IP address: &#34;);
+  Serial.println(WiFi.localIP());
+
+  if (MDNS.begin(&#34;esp32&#34;)) {
+    Serial.println(&#34;MDNS responder started&#34;);
+  }
+
+JsonFile = &#34;Hi, here is my JsonFile&#34;;
+  server.on(&#34;/&#34;, handleRoot);
+
+  server.on(&#34;/inline&#34;, []() {
+    server.send(200, &#34;text/plain&#34;, &#34;this works as well&#34;);
+  });
+
+  server.onNotFound(handleNotFound);
+
+  server.begin();
+  Serial.println(&#34;HTTP server started&#34;);
+
+}
+
+//************************************************************
+void loop() {
+
+// calculate in each loop to have correct values
+mpu.update();
+    YPosfloat = round(1.5 * mpu.getAngleX());
+    XPosfloat = round(3.0 * mpu.getAngleZ());
+    ZPos = 2;
+
+    XPos = String(int(XPosfloat));
+    YPos = String(int(YPosfloat));
+
+//give out the results each 2000 ms
+long currentMillis = millis(); // Current time
+ if (currentMillis - previousMillis &gt;= 2000) {
+  previousMillis = currentMillis;
+
+  // assemble the Json file
+  JsonFile = (&#34;{\&#34;XGo\&#34;:&#34; + XPos + &#34;, \&#34;YGo\&#34;:&#34; + YPos + &#34;, \&#34;Action\&#34;:&#34; + ZPos + &#34;}&#34; );
+  Serial.println(JsonFile);
+ 
+//  Serial.print(XPosfloat); // for test with the serial plotter
+//  Serial.print(&#34;,&#34;);
+//  Serial.print(YPosfloat);
+//  Serial.println(&#34;&#34;);
+ }
+ // let the web server run
+  server.handleClient();
+
+}
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Der Befehl delay darf im Softwareablauf nicht verwendet werden, da mit einem Stop des ESP32 die kontinuierliche Berechnung angehalten wird, die Positionswerte dann nicht mehr sauber integriert werden und weglaufen.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Leider bringt der ESP32-Webserver mit seiner index.html bei einer direkten Verbindung den ESP32-Webclient im Roboter reproduzierbar zum Absturz.</p>
+<p><img src="/images/GyroHut/Guru_Error2.jpg" alt="Plotter" /></p>
+<p>Als Ursache vermute ich: Die index.html enthält nur das Json File, keine &lt;head&gt;-tags mit weiteren Informationen für den Server. Zum Betrieb des Avatars wird die Json-Seite jedoch auf meinen Raspberry gespiegelt und ins Web gehosted. So kann  der Avatar an einem entfernten Ort auf meine Bewegungen reagieren. Über den Raspi trat das Problem nicht mehr auf, obwohl die index.html nicht verändert wurde.</p>
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/webradio/">WebRadio</a></li>
+				
+				<li><a href="/posts/3d-druck/">3D-Druck</a></li>
+				
+				<li><a href="/posts/stencil3ddruck/">3D-Druck eines Stencil-Halters</a></li>
+				
+				<li><a href="/posts/laserscan/">3D Laser Scanner</a></li>
+				
+				<li><a href="/posts/wlanrelais/">WLanRelais</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2022 <a href="http://22x22.de/"><b>mancas</b></a>.
+	<a href="/impressum/impressum"><b>Impressum</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>

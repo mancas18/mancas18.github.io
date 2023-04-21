@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="de-de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>Brachiograph</title>
+	<meta name="description" content="Personal blog">
+	<meta name="author" content="Manfred Caspar">
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	------<br>
+	  <a href="http://22x22.de/">mancas</a> <br>
+	------
+	<div style="float: right;"></div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts/"><b>Laufendes Projekt</b></a>.
+			
+			<a href="/%C3%BCber-diese-seite/about"><b>Über diese Seite</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>Brachiograph</h1>
+			<b><time>2020-06-14 20:30:08</time></b>
+		       
+
+			<div>
+				<p><b>In den wesentlichen Punkten fertig </b>, kleinere Ergänzungen folgen.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="am-anfang-war-der-eisstilplotter">Am Anfang war der Eisstilplotter</h3>
+<p>Beim Lesen der Neuigkeiten online wurde dieser Eisstilplotter entdeckt.<br />
+<a href="https://www.heise.de/make/meldung/BrachioGraph-Eisstielplotter-mit-Raspberry-Pi-4653448.html">https://www.heise.de/make/meldung/BrachioGraph-Eisstielplotter-mit-Raspberry-Pi-4653448.html</a></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="er-wird-auch-brachiograph-genannt">Er wird auch Brachiograph genannt</h3>
+<p>Viele Details findet man im Ursprungsprojekt <a href="https://www.brachiograph.art/">https://www.brachiograph.art/</a></p>
+<p>Das ist ein Raspberry Pi Projekt - sollte das nicht auch mit dem ESP32 gehen? Ein  Webserver auf meinem Laptop könnte die Koordinaten für die zu zeichnende Linie liefern, der ESP32 holt sich das ab und steuert mit Servos den Stift.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h1 id="mechanik">Mechanik</h1>
+<p>Die Umsetzung der Mechanik wurde mit PVC-Profilen aus dem Baumarkt etwas stabiler ausgeführt. Der Arm wird durch das Basis-Servo gehalten, das Ellbogen-Servo hängt in der Luft und die zweite Auflage bildet die Spitze des Stiftes. Das Servo am Schreibstift macht nur einen kleinen Winkel um den Stift ggf. anzuheben.</p>
+<p><img src="/images/Brachiograph/Plotter.jpg" alt="Plotter" /></p>
+<p>Das ist natürlich immer noch kein genauer Plotter, aber die Umsetzung macht Spaß von der Berechnung der Koordinaten bis Code zum Ansteuern der Servos.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h1 id="etwas-mathematik">Etwas Mathematik</h1>
+<p>Mit einer Skizze kann man sich die Berechnung der Winkel für die Servos herleiten.</p>
+<p>Wie man leicht sieht &hellip;</p>
+<p><img src="/images/Brachiograph/LegWinkelRechnung.jpg" alt="LegWinkelRechnung" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="code-zur-winkelberechnung">Code zur Winkelberechnung</h3>
+<p>Im Code sieht das dann so aus.</p>
+<pre tabindex="0"><code>/Calculation Servo Angles for actual position
+
+// global variables
+// position to catch: (XPos, YPos)
+// lenght of both legs: Leg
+// output variables are the angles for the servos - AlfaInLeg, AlfaOuLeg
+
+// auxiliary variables
+float Beta;
+float Height;
+float Gamma;
+float AlfaInLegCalc;
+float AlfaOuLegCalc;
+
+
+void CalcPositionAngle()
+{
+
+
+Serial.println(&#34;calulated position angles are&#34;);
+
+Beta = 360/3.1416/2*atan(XPos/YPos);
+// Serial.println(Beta);
+Height = sqrt(Leg*Leg-(XPos*XPos+YPos*YPos)/4);
+// Serial.println(Height);
+Gamma = 360/3.1416/2*asin(Height/Leg);
+// Serial.println(Gamma);
+
+// estimated values for AlfaInLeg are from -134.8 to -42.6 degres should be corrigated 
+// with +140 degres to be from 5.2 to 97.4 
+// estimated values for AlfaOuLeg are from 4.4 to 68 degres
+
+AlfaInLegCalc = 60 + (Gamma - Beta); //transfered coordinate system to 140°
+AlfaOuLegCalc = 180 - 2*(90-Gamma);
+
+AlfaInLeg = (int) AlfaInLegCalc;
+AlfaOuLeg = (int) AlfaOuLegCalc;
+
+Serial.print(&#34;AlfaInLeg &#34;); Serial.print(AlfaInLeg); Serial.print(&#34; AlfaOuLeg &#34;); Serial.println(AlfaOuLeg); 
+//delay(1000);
+}
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="wertebereich-und-genauigkeit">Wertebereich und Genauigkeit</h3>
+<p>Ich hatte mit den Formeln über LibreOfficeCalc den Wertebereich bestimmt. Dabei wird klar, dass es Bereiche gibt, in denen eine kleine Winkeländerung eine Große Wirkung hat. Durch die Servos und ungenügende Steifigkeit ist den Plotter schon wenig präzise und er ist in diesen Bereichen nochmals schlechter.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="ansteuerung-der-servos-und-deren-montage">Ansteuerung der Servos und deren Montage</h3>
+<p>Um das Grundprinzip der Servos zu verstehen hatte ich mir dies angeschaut.<br />
+<a href="https://randomnerdtutorials.com/esp32-servo-motor-web-server-arduino-ide/">https://randomnerdtutorials.com/esp32-servo-motor-web-server-arduino-ide/</a></p>
+<p>Sehr schön erklärt. Damit bring man die Servos in die richtige Montageposotion und sieht auch, ob das Servo bei einer Ansteuerung von -90 Grad bis + 90 Grad auch komplette 180 Grad fährt oder, wie bei mir, noch ein Korrekturfaktor notwendig wird.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="schnittstellendefinition-zum-abholen-der-steuerungsdaten">Schnittstellendefinition zum Abholen der Steuerungsdaten</h3>
+<h4 id="serverseitig">Serverseitig</h4>
+<p>Die Schnittstelle vom Laptop zum ESP32 habe ich einfach gestaltet.</p>
+<p>Der Apache-Server auf meinem Laptop liefert  die Anforderung an den Plotter in einzelnen Json-Files.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+Erstes File   
+### 1.html   
+```
+{"XGo":-8, "YGo":13, "Pen":1}
+```
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Zweites File</p>
+<h3 id="2html">2.html</h3>
+<pre tabindex="0"><code>{&#34;XGo&#34;:4, &#34;YGo&#34;:13, &#34;Pen&#34;:1}
+</code></pre><p>Diese enthalten demnach jeweils nur die mit dem Stift anzusteuernden Koordinaten und zusätzlich den Hinweis, ob der Stift beim Verfahren abgesenkt (1) oder angehoben (0) wird.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+### Letztes File
+Beim letzten File setze ich schließlich "Pen":-1} und beende so das Zeichnen.
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h4 id="esp-schnittstellenseite">ESP Schnittstellenseite</h4>
+<p>Der ESP holt sich das mit dieser Routine ab</p>
+<pre tabindex="0"><code>// Modifiziertes Script von https://techtutorialsx.com/2016/07/17/esp8266-http-get-requests/
+// added by mancas@22x22.org
+
+void GetJsonData()  
+{
+String Line;
+
+Serial.println(&#34;working on GetJsonData&#34;);
+//delay(5000);
+ 
+if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
+ 
+HTTPClient http;  //Declare an object of class HTTPClient
+
+String httpCall;
+httpCall = &#34;http://192.168.63.248/&#34; + String(IndexCounter) + &#34;.html&#34;;
+
+Serial.print(&#34; called adress &#34;); Serial.println(httpCall);
+ 
+//http.begin(&#34;http://192.168.63.6/index.html&#34;);  //Specify request destination
+http.begin(httpCall);
+
+int httpCode = http.GET();                                                                  //Send the request
+Serial.print(&#34; - httpCode is &#34;);
+Serial.println(httpCode);
+ 
+if (httpCode &gt; 0) { //Check the returning code
+ 
+Line = http.getString();   //Get the request response line
+
+Serial.print(&#34;Response from Server &#34;); Serial.println(Line);                     //Print the response from server
+//Serial.println(&#34; ----------------------------------------------------------- &#34;);
+//delay(1000);
+http.end();   //Close connection
+
+
+
+}
+
+// Allocate JsonBuffer  // Leh
+  // Use arduinojson.org/assistant to compute the capacity.
+  const size_t capacity = JSON_OBJECT_SIZE(3);
+  DynamicJsonBuffer jsonBuf(capacity);
+  
+//  DynamicJsonBuffer jsonBuf;
+  JsonObject &amp;root = jsonBuf.parseObject(Line);
+  if (!root.success())
+  {
+    Serial.println(&#34;parseObject() ------------- FAILED -----------&#34;);
+    Serial.println(&#34;TAKE MY TEST VALUES XGo 1.5, YGo 13.0, Pen 1&#34;);
+    XPosTarget = 1.5;
+    YPosTarget = 13.0;
+    Pen = 1;
+        
+    Serial.println(&#34;Target to draw&#34;);
+    Serial.print(XPosTarget); Serial.print(&#34;,&#34;); Serial.print(YPosTarget); Serial.print(&#34; Pen &#34;); Serial.println(Pen);
+    return;
+  }
+
+// Here is an example of the expected response:
+// {&#34;XGo&#34;:1.5, &#34;YGo&#34;:13.0, &#34;Pen&#34;:1}
+// Last Line recognized if &#34;Pen&#34; is set to -1
+  
+  XPosTarget = root[&#34;XGo&#34;];
+  YPosTarget = root[&#34;YGo&#34;];
+  Pen = root[&#34;Pen&#34;];
+
+  Serial.println(&#34;json was correct processed, target to draw from &#34;);
+  Serial.print(XPosStart); Serial.print(&#34;,&#34;); Serial.print(YPosStart);
+  Serial.println(&#34; to &#34;);
+  Serial.print(XPosTarget); Serial.print(&#34;,&#34;); Serial.print(YPosTarget); Serial.print(&#34; Pen &#34;); Serial.println(Pen);
+  IndexCounter +=1;
+ 
+}
+
+} 
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="kleine-zeichenschritte-ergeben-eine-linie">Kleine Zeichenschritte ergeben eine Linie</h3>
+<p>Der Weg wird in kleine Schrittchen zerlegt und abgefahren.</p>
+<pre tabindex="0"><code>void GoThePath() 
+{
+
+//Auxiliary variables
+float Path;
+float AlfaPath;
+float StepWide;
+int StepNumber;
+int counter;
+
+StepWide = 0.05;
+
+Path = sqrt((XPosTarget-XPosStart)*(XPosTarget-XPosStart)+(YPosTarget-YPosStart)*(YPosTarget-YPosStart)); //Vector to go
+AlfaPath = asin((YPosTarget-YPosStart)/Path);
+//AlfaPath = atan((YPosTarget-YPosStart)/(XPosTarget-XPosStart)); // angle of the path
+StepNumber = (int) (Path / StepWide); //go the path in steps of StepWide
+
+Serial.print(&#34;I will go the path lenght of &#34;);Serial.print(Path);Serial.print(&#34; in &#34;); Serial.print(StepNumber); Serial.println(&#34; Steps&#34;);
+ 
+for (counter = 1; counter &lt;= StepNumber; counter +=1) {
+
+//XPos = XPosStart + counter * StepWide * cos(AlfaPath);
+YPos = YPosStart + counter * StepWide * sin(AlfaPath);
+
+if (XPosTarget &lt;= XPosStart) {XPos = XPosStart - counter * StepWide * cos(AlfaPath);}
+if (XPosTarget &gt; XPosStart) {XPos = XPosStart + counter * StepWide * cos(AlfaPath);}
+//if (YPosTarget &lt;= YPosStart) {YPos = YPosStart - counter * StepWide * sin(AlfaPath);}
+//if (YPosTarget &gt; YPosStart) {YPos = YPosStart + counter * StepWide * sin(AlfaPath);}  
+
+
+// catch calculation bugs of the lousy programmer and save the mechanic
+    if (((XPos &lt; -10) || (XPos &gt; 6)) || ((YPos &lt; 2) || (YPos &gt; 15))) {
+    Serial.println(&#34;EXIT 1&#34;);
+    Serial.println(&#34;EXIT 1&#34;);
+    Serial.println(&#34;EXIT 1&#34;);
+    Serial.println(&#34;EXIT 1&#34;);return;}
+
+
+//  Serial.println();
+  Serial.print(&#34;intermediate Step &#34;); Serial.print(counter); Serial.print(&#34; &#34;);Serial.print(XPos); Serial.print(&#34;,&#34;); Serial.println(YPos);
+  CalcPositionAngle();
+
+  myservoInLeg.write(AlfaInLeg);
+  myservoOuLeg.write(AlfaOuLeg);
+  myservoPen.write(40);
+  Serial.println(&#34;--- Servos are turned ---&#34;);
+  delay(10);
+
+}
+
+//last step to do
+XPos = XPosTarget;
+YPos = YPosTarget;
+//Serial.println();
+Serial.print(&#34;final Step &#34;); Serial.print(XPos); Serial.print(&#34;,&#34;); Serial.println(YPos);
+CalcPositionAngle();
+
+ myservoInLeg.write(AlfaInLeg);
+  myservoOuLeg.write(AlfaOuLeg);
+  myservoPen.write(500);
+  Serial.println(&#34;--- Servos are turned ---&#34;);
+  delay(10);
+
+}
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="alles-zusammen-geschnürt">Alles zusammen geschnürt</h3>
+<p>Das Haupprogramm ruft die Routinen ab</p>
+<pre tabindex="0"><code>/*** Brachiograf
+  by mancas@lug-saar.de
+  light example of the brachiograph plotter with arduino ESP32
+  see brachiograph.art
+  
+  modified 19 Jun 2020
+  by mancas
+***/
+
+
+#include &lt;Arduino.h&gt;
+#include &lt;Servo.h&gt;
+#include &lt;WiFi.h&gt;
+//#include &lt;WiFiMulti.h&gt;
+#include &lt;HTTPClient.h&gt;
+#include &lt;ArduinoJson.h&gt;
+#include &lt;WiFiUdp.h&gt;
+
+void TestRoutine();
+void CalcPositionAngle();
+void GetJsonData();
+void GoThePath();
+
+// WiFi Daten
+const char* ssid     = &#34;xxx&#34;;     // SSID of local network
+const char* password = &#34;xxx&#34;;   // Password on network
+
+
+// Globale Variables
+float XPosStart; float XPos;    float XPosTarget;
+float YPosStart; float YPos;    float YPosTarget;
+int Pen;
+int IndexCounter = 1;
+
+int AlfaInLegStart; int AlfaInLeg; int AlfaInLegTarget;
+int AlfaOuLegStart; int AlfaOuLeg; int AlfaOuLegTarget;
+int Leg = 8;
+
+Servo myservoInLeg;  // create servo objects to control
+Servo myservoOuLeg;
+Servo myservoPen;
+
+
+
+
+void setup() {
+
+Serial.begin(115200);
+//  initMAX7219();
+//  sendCmdAll(CMD_SHUTDOWN, 1);
+//  sendCmdAll(CMD_INTENSITY, 0);
+Serial.println(&#34;----------------------------------------------------------------------------------------------&#34;);
+Serial.println(&#34;----------------------------------------------------------------------------------------------&#34;);
+Serial.println(&#34;----------------------------------------------------------------------------------------------&#34;);
+
+  Serial.print(&#34;taking connection to the WiFi &#34;);
+  WiFi.begin(ssid, password);
+//  printStringWithShift(&#34;Verbinde&#34;, 15);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(&#34;.&#34;);
+  }
+  
+Serial.println(&#34;&#34;);
+Serial.print(&#34;I am connected to your Wifi as &#34;); Serial.println(WiFi.localIP());
+
+// initialise servos
+// Allow allocation of all timers
+//  ESP32PWM::allocateTimer(0);
+//  ESP32PWM::allocateTimer(1);
+//  ESP32PWM::allocateTimer(2);
+//  ESP32PWM::allocateTimer(3);
+  
+//  myservoInLeg.setPeriodHertz(50);  // create servo objects to control
+//  myservoOuLeg.setPeriodHertz(50);
+//  myservoPen.setPeriodHertz(50);
+  
+//  myservoInLeg.attach(13, 1000, 2000); 
+//  myservoOuLeg.attach(16, 1000, 2000);
+//  myservoPen.attach(17, 1000, 2000);
+  // attaches the servo on pin 13 to the servo object
+  // using default min/max of 1000us and 2000us
+  // different servos may require different min/max settings
+  // for an accurate 0 to 180 sweep
+
+  
+// initialise und set start variables
+
+myservoInLeg.attach(13);  // attaches the servo on GPIO13 to the servo object
+myservoOuLeg.attach(16);  // attaches the servo on GPIO16 to the servo object
+myservoPen.attach(17);    // attaches the servo on GPIO17 to the servo object
+// Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
+
+//StartPosition
+XPosStart = -8;
+YPosStart = 8;
+Pen = 0;
+
+XPos = XPosStart;
+YPos = YPosStart;
+
+Serial.println(&#34;booting is ready, time to put power to the servos&#34;);
+Serial.println(&#34;will go to start position with the servos&#34;);
+Serial.print(&#34;set to start position&#34;); Serial.print(&#34;(&#34;); Serial.print(XPosStart);Serial.print(&#34;,&#34;);Serial.print(YPosStart); Serial.println(&#34;)&#34;);
+Serial.println(&#34;that means inner legs position is set to nine o&#39;clock and outer legs position is zwelve o&#39;clock and pen is up&#34;);
+//Serial.println(&#34;call subroutine CalcPositionAngle&#34;);  
+CalcPositionAngle();
+//Serial.println(&#34;finished with CalcPositionAngle&#34;);
+
+myservoInLeg.write(AlfaInLeg);
+myservoOuLeg.write(AlfaOuLeg); 
+myservoPen.write(10); // pen is up
+Serial.println(&#34;I have finished my initialisation programm and wait 5 seconds to check servo positions&#34;);
+delay(5000);
+
+}
+
+
+void loop() {
+Serial.println(&#34;I fetch my new drawing target from server&#34;);  //get new XPosTarget and YPosTarget
+
+if (Pen &gt;=0){GetJsonData();}
+
+if (Pen &gt;=0) {
+
+
+if (((XPosTarget &gt;= -8) &amp;&amp; (XPosTarget &lt;= 4)) &amp;&amp; ((YPosTarget &gt;= 4) &amp;&amp; (YPosTarget &lt;= 13))) {
+
+  if ((XPosStart != XPosTarget) || (YPosStart != YPosTarget)) {
+  GoThePath(); //draw the pencil to new position
+  
+XPosStart = XPosTarget; //Target is the new start position for next line
+YPosStart = YPosTarget;
+//CalcPositionAngle();
+  } else {Serial.print(&#34;waiting for next drawing order&#34;);} 
+
+} else {Serial.println(&#34;valuse are out of range, will do nothing&#34;);} 
+
+
+} else {Serial.println(&#34;Pen -1 is my signal, that I have finished my last drawing target&#34;); delay(30000);}
+
+}
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="das-ergebnis">Das Ergebnis</h3>
+<!-- blank line -->
+<figure class="video_container">
+<video controls="true" allowfullscreen="true" poster="/images/Brachiograph/Plotter-Zeichnet.jpg">
+<source src="/images/Brachiograph/Plotter-Zeichnet.mp4" type="video/mp4">
+</video>
+</figure>
+<!-- blank line -->
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="es-gibt-noch-zu-tun">Es gibt noch zu tun</h3>
+<p>Im Code sind Anheben und Absenken des Stiftes sowie Winkel-Korrekturfaktor für die Servos noch nicht umgesetzt.</p>
+<p>Viel Spaß beim Nachbauen und Ergänzen.</p>
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/webradio/">WebRadio</a></li>
+				
+				<li><a href="/posts/3d-druck/">3D-Druck</a></li>
+				
+				<li><a href="/posts/stencil3ddruck/">3D-Druck eines Stencil-Halters</a></li>
+				
+				<li><a href="/posts/laserscan/">3D Laser Scanner</a></li>
+				
+				<li><a href="/posts/wlanrelais/">WLanRelais</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2022 <a href="http://22x22.de/"><b>mancas</b></a>.
+	<a href="/impressum/impressum"><b>Impressum</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>

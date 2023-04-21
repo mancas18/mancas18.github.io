@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Demo on mancas</title>
+    <link>http://22x22.de/categories/demo/</link>
+    <description>Recent content in Demo on mancas</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>de-de</language>
+    <lastBuildDate>Mon, 04 Feb 2019 00:00:00 +0000</lastBuildDate><atom:link href="http://22x22.de/categories/demo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Webseite</title>
+      <link>http://22x22.de/FirstPage/</link>
+      <pubDate>Mon, 04 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://22x22.de/FirstPage/</guid>
+      <description>&lt;p&gt;Wie erstellt und pflegt man eine Webseite? Habe mich über den neuesten Stand informiert. LAMP, also Linux, Apache, Mysql, php? Mit einem Content Management System wie z. B. Wordpress wäre eine Möglichkeit. Die Seite meines UL-Vereins hatte ich damals mit Joomla erstellt. Alles lauft auf dem Server des Web Space Providers und man hat die Sicherheitsrisiken der Software. Kann allerdings sehr flexibel verändert und peflegt werden. Mehrere können gleichzeitig pflegen.&lt;/p&gt;
+&lt;p&gt;Dann gibt es die Möglichkeit, die Seiten mit einem static Websystem auf dem Rechner zuhause zu pflegen und das Ergebnis als statische Seite hochzuladen.&lt;/p&gt;
+&lt;p&gt;Hugo ist so ein System.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

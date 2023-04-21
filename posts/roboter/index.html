@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de-de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>Roboter Studie</title>
+	<meta name="description" content="Personal blog">
+	<meta name="author" content="Manfred Caspar">
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	------<br>
+	  <a href="http://22x22.de/">mancas</a> <br>
+	------
+	<div style="float: right;"></div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts/"><b>Laufendes Projekt</b></a>.
+			
+			<a href="/%C3%BCber-diese-seite/about"><b>Über diese Seite</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>Roboter Studie</h1>
+			<b><time>2020-08-14 23:55:00</time></b>
+		       
+
+			<div>
+				<h3 id="bart-mein-präsenz-roboter-würde-für-mich-als-avatar-an-besprechungen-teilnehmen">Bart, mein Präsenz-Roboter würde für mich als Avatar an Besprechungen teilnehmen.</h3>
+<p><b>BART</b> bedeuted <b>B</b>lue-<b>A</b>vatar-<b>R</b>obote<b>R</b>.</p>
+<p>Neben Bild- und Tonübertragung, wie bei einer Web-Konferenz, sollte der Roboter den Kopf jeweils dem Gesprächspartner zuwenden aber auch andere Dinge im Konferenzraum beobachten und Übertragen.</p>
+<p>14.08.2020 - Die Ansteuerung über das Internet könnte analog zum Brachiographen erfolgen. Der Roboter holt sich Steuerungssignale von seinem Server um sich in einem entfernten Besprechungsraum zu bewegen. Eine Steuerungseinheit zuhause bereitet die Steuerungssignale für den Web-Server auf.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="prinzipdarstellung-kopf-und-augen">Prinzipdarstellung Kopf und Augen</h3>
+<p>Bis zum 14.09.2020 wurde ein erster Entwurf für Kopf und Augen von Bart-0.1 gebaut. Er dient der grundsätzlichen Funktions-Darstellung und dem Testen des Codes.</p>
+<!-- blank line -->
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="/images/Roboter/RoboterKopf.jpg">
+    <source src="/images/Roboter/RoboterKopf.mp4" type="video/mp4">
+    </video>
+</figure>
+<!-- blank line -->
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="servoaufnahme-und-gelenk">Servoaufnahme und Gelenk</h3>
+<p>Die Servos werden in ein Vierkantrohr eingesetzt, so dass die Drehachse auf der einen Seite durch das Lager des Servos und die auf der anderen durch einen eingesetzten Schraubenbolzen gebildet wird.</p>
+<!-- blank line -->
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="/images/Roboter/Servoeinbau.jpg">
+    <source src="/images/Roboter/Servoeinbau.mp4" type="video/mp4">
+    </video>
+</figure>
+<!-- blank line -->
+<!-- blank line -->
+<br>
+<!-- blank line -->
+### 3D-CAD Entwurf
+<p>Später sollen 3D Printvorlagen entstehen. Zu Übung hier der Einbau, mit OpenSCAD skizziert.</p>
+<p><img src="/images/Roboter/ServoeinbauCAD.jpg" alt="ServoeinbauCAD" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="flegende-verkabelung">Flegende Verkabelung</h3>
+<p>Das Breadbord habe ich auseinander geschnitten und aufgeklebt, da mein <i>ESP32 NodeMCU </i> breit ausfällt.</p>
+<p><img src="/images/Roboter/RoboterESP32.jpg" alt="RoboterESP32" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+### Das erste Leben!
+<p>Großer Tag am 28.09.2020<br />
+Der ESP32 fragt meinen Webserver nach dem File <i> Bart.html </i> ab.</p>
+<pre tabindex="0"><code>{&#34;XGo&#34;:90, &#34;YGo&#34;:-30, &#34;Action&#34;:0}
+</code></pre><p>WerteBereich für XGo ist von -150 bis + 150, für YGo von -60 bis +60. Bart schaut also, aus seiner Sicht gesehen, nach links unten. Er frägt den Server ständig ab und reagiert sobald er eine Veränderung am File erkennt. Nun wird <i> Bart.html </i> mit dem Editor geändert.</p>
+<pre tabindex="0"><code>{&#34;XGo&#34;:-90, &#34;YGo&#34;:20, &#34;Action&#34;:0}
+</code></pre><p>Die Reaktion:</p>
+<!-- blank line -->
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="/images/Roboter/Roboter_turn.jpg">
+    <source src="/images/Roboter/Roboter_turn.mp4" type="video/mp4">
+    </video>
+</figure>
+<!-- blank line -->
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Ich komm  mir vor wie Frankenstein.<br />
+Gut, die Augen sind noch etwas leblos, hier fehlen ein paar LEDs.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="smile-to-me">Smile to me</h3>
+<p>03.10.2020 - Die Varaible <i> Action </i> wird zur Ansteuerung fester Abläufe vorgesehen. Hier wird ein Nicken, Kopfschütteln oder mit diesem 9x9 LED-Display als Mund auch Mimik dargestellt.</p>
+<p><img src="/images/Roboter/RobotSmile.jpg" alt="RobotSmile" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Für einen weiteren Ausbau des Kopfes sind die kleinen SG90 Servos in dem Prinzipaufbau zu schwach. Hier muss eine verbesserter Aufbau erstellt werden.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="ansteuerung-des-avatars">Ansteuerung des Avatars</h3>
+<p>Erstmal geht es aber auf der Server Seite weiter. Dort brauchen wir eine einfache Möglichkeit für das Ändern und Schreiben des <i> Bart.html</i>. Ein einfaches Python Script ist ein erster Schritt.</p>
+<pre tabindex="0"><code>mancas@tiger:/var/www/html# ./Bart_html_Json_schreiben.py
+
+Kopf drehen auf Position 
+
+XPos eingeben    - range -150 bis +150   50
+XPos eingeben    - range -60 bis +60     20
+
+Actioncode ist      1 für :-|      2 für :-)      3 für :-( 
+Actioncode eingeben 
+ 2
+
+JsonFile ./Bart.html wurde geschrieben   {&#34;XGo&#34;:50, &#34;YGo&#34;:20, &#34;Action&#34;:2}
+</code></pre><!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="gyro-hut">Gyro Hut</h3>
+<p>Viel besser ist es, wenn meine Bewegungen erfasst werden. Mit einem Gyro-Chip kann man Drehwinkel ermitteln. So ist die Idee des Gyrohuts (<a href="http://22x22.de/posts/gyrohut/">http://22x22.de/posts/gyrohut/</a>) entstanden. Wenn ich den Hut trage wird er meine Kopfbewegungen an Bart übertragen, so dass der Roboter sich genauso bewegt.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Simultane Reaktionen des Avatars sind so möglich.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="blau">Blau</h3>
+<p>Ich habe Bart neu aufgebaut, die SG90 Servos waren doch etwas zu schwach. Jetzt sind 996R drin, Aluschienen statt Kunststoff werden verwendet und der Körper ist ein stabiles Gehäuse aus Holz mit Einbau des Tablets für die Webkonferenz.</p>
+<p>Auch hat Bart Farbe bekommen, sowie zwei LED Augen, an deren Blinken ich erkennen kann, was er gerade macht.</p>
+<p><img src="/images/Roboter/Bart_blue_2.jpg" alt="RobotSmile" /></p>
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/webradio/">WebRadio</a></li>
+				
+				<li><a href="/posts/3d-druck/">3D-Druck</a></li>
+				
+				<li><a href="/posts/stencil3ddruck/">3D-Druck eines Stencil-Halters</a></li>
+				
+				<li><a href="/posts/laserscan/">3D Laser Scanner</a></li>
+				
+				<li><a href="/posts/wlanrelais/">WLanRelais</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2022 <a href="http://22x22.de/"><b>mancas</b></a>.
+	<a href="/impressum/impressum"><b>Impressum</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>

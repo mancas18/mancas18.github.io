@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de-de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>WebRadio</title>
+	<meta name="description" content="Personal blog">
+	<meta name="author" content="Manfred Caspar">
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	------<br>
+	  <a href="http://22x22.de/">mancas</a> <br>
+	------
+	<div style="float: right;"></div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts/"><b>Laufendes Projekt</b></a>.
+			
+			<a href="/%C3%BCber-diese-seite/about"><b>Über diese Seite</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>WebRadio</h1>
+			<b><time>2022-07-03 15:00:00</time></b>
+		       
+
+			<div>
+				<p>Radiostream aus dem Internet -</p>
+<p>Wie so oft habe ich im Internet etwas gefunden, das mich zu einem Projekt inspiriert hat. <br />
+Das war mein Link: <a href="https://www.az-delivery.de/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/internet-radio-mit-dem-esp32">https://www.az-delivery.de/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/internet-radio-mit-dem-esp32</a></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="inspiration">Inspiration</h3>
+<p><img src="/images/WebRadio/WebRadioInspiration.jpg" alt="WebRadioInspiration.jpg" /><br />
+Ja, und wie immer habe ich es etwas modifiziert, so wie es mir besser gefällt.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="besserer-klang">Besserer Klang</h3>
+<p>Die kleinen Lautsprecher machen wirklich keinen guten Sound, besser wäre es mit Aktivboxen, wie sie es zum Anschluß an den Laptop gibt, denn da ist ein Subwoofer und auch eine Klangregelung mit dabei und den Akku brauch ich auch nicht.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="löten">Löten</h3>
+<p>Erstmal so auf einer Lochrasterplatine zusammengelötet, dabei wird der Ausgang über zwei 4,7 yF Kondensatoren auf eine Klinkenbuchse geführt.</p>
+<p><img src="/images/WebRadio/WebRadioLochraster.jpg" alt="WebRadioLochraster.jpg" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="gehäuse">Gehäuse</h3>
+<p>Das Ganze bekommt ein 3D-gedrucktes Gehäuse.</p>
+<p><img src="/images/WebRadio/WebRadioGehauseVorn.jpg" alt="WebRadioGehauseVorn.jpg" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<p>Das Gehäuse hat einen Deckel und vorne einen Einschub auf dem der Dreh-Encoder, das Display und Huckepack die Platine montiert werden. Hier ein Bild des Einschubs von innen, mit Display und Dreh-Encoder, ohne die  Platine.</p>
+<p><img src="/images/WebRadio/WebRadioDisplay.jpg" alt="WebRadioDisplay.jpg" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h4 id="kellerfund">Kellerfund</h4>
+<p>Im Keller habe ich das leere Gehäuse eines OWIN Radios aus den 20igern gefunden. Leider, leider war es leer, sonst hätte ich diese Antiquität original gelassen. Aber wenigstens das Gehäuse wollte ich wieder in neuem Glanz sehen. Da kam mein Webradio rein, zusammen mit dem Verstärker aus dem ursprünglichen Bauvorschlag und zwei Autolautsprechern.</p>
+<p>Dort, wo ursprünglich der große Drehkondensator mit seiner kegelförmigen Senderskala war, habe ich einen neuen Kegel 3D-gedruckt und so ein kleines quadratisches OLED Display eingebaut. Wegen der Kegelform ist das lange LCD-Display ja nicht möglich.</p>
+<p>Das OLED gefällt, es lässt sich sehr gut ablesen und ist gestochen scharf.</p>
+<p>Mit einem Sender, der Musik aus alten Zeiten oder für mich feinen Rock&rsquo;n Roll spielt finde ich das Oldie Radio super.</p>
+<p><img src="/images/WebRadio/WebRadioOwinAussen.jpg" alt="WebRadioOwinAussen.jpg" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="100-jahre-zeitsprung">100 Jahre Zeitsprung</h3>
+<p>Wenn man nach innen schaut: der Raum war ursprünglich mit Röhrentechnik ausgefüllt und so klein sind die Bauteile heute, 100 Jahre später.</p>
+<p><img src="/images/WebRadio/WebRadioOwinInnen.jpg" alt="WebRadioOwinInnen.jpg" /></p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="platine">Platine</h3>
+<p>Mit der Open Source Software KiCad kann man hervorragend eine Platine entwickeln. Hier hat mir mase vom Hacksaar viel geholfen und geduldig erklärt. Es ist im Grunde nicht schwierig, aber es war meine erste Platine, und ohne ihn hätte ich fast aufgegeben. Auch von der LUG-Saar, mamue, dominik und holm bekam ich Hilfe, so hab ich&rsquo;s dann geschafft.</p>
+<p>Man startet mit dem Schaltplan.</p>
+<p><img src="/images/WebRadio/WebRadioKiCadSchematic.jpg" alt="WebRadioKiCadSchematic.jpg" /></p>
+<p>Daraus wird die Platine abgeleitet.</p>
+<p><img src="/images/WebRadio/WebradioKiCadPCB.jpg" alt="WebradioKiCadPCB.jpg" /></p>
+<p>KiCad macht die Ableitung einfach und liefert auch gleich die Files zum selber Ätzen oder auch Bestellen. Mit dem Ätzen wollte ich nicht anfangen, also hab ich bestellt. Sieht auch besser aus.</p>
+<p><img src="/images/WebRadio/WebradioPlatineBestellt.jpg" alt="WebradioPlatineBestellt.jpg" /><br />
+Größe 54x44 mm</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="gehäuse-1">Gehäuse</h3>
+<p>Jetzt gibt&rsquo;s noch eine etwas kleineres, 3D-gedrucktes Gehäuse mit der bestellten, sauber aufgebauten Platine.</p>
+<p><img src="/images/WebRadio/WebradioFinal.jpg" alt="WebradioFinal.jpg" /></p>
+<p>Fertig! Also erstmal, sowas kann ja immer noch verbessert und erweitert werden.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+<h3 id="dokumentation">Dokumentation</h3>
+<p>KiCad Files, Software für den ESP32 und die 3D-Druckfiles des Gehäuses gibts hier: <a href="https://github.com/mancas18/ESPWebradio_5">https://github.com/mancas18/ESPWebradio_5</a> <br />
+Von den 10 bestellten Platinen hab ich auch noch ein paar übrig.</p>
+<!-- blank line -->
+<br>
+<!-- blank line -->
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/webradio/">WebRadio</a></li>
+				
+				<li><a href="/posts/3d-druck/">3D-Druck</a></li>
+				
+				<li><a href="/posts/stencil3ddruck/">3D-Druck eines Stencil-Halters</a></li>
+				
+				<li><a href="/posts/laserscan/">3D Laser Scanner</a></li>
+				
+				<li><a href="/posts/wlanrelais/">WLanRelais</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2022 <a href="http://22x22.de/"><b>mancas</b></a>.
+	<a href="/impressum/impressum"><b>Impressum</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>
